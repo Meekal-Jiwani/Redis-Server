@@ -1,4 +1,4 @@
-const net = require('net');
+const net = require("net");
 
 const logger = require("./logger").default("server");
 
@@ -14,7 +14,8 @@ server.on("connection", (socket) => {
         const reqData = data.toString();
         logger.log(reqData);
         
-        socket.write("res: " + reqData);
+        socket.write("+OK\r\n");
+        // socket.write("res: " + reqData);
     });
 
     socket.on("end", () => {
