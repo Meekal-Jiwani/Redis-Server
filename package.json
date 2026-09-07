@@ -1,0 +1,15 @@
+{
+  "name": "redis-server-project",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "Meekal Jiwani",
+  "license": "MIT",
+  "devDependencies": {
+    "cross-env": "^10.1.0"
+  }
+}
