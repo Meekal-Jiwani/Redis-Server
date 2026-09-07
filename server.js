@@ -6,6 +6,8 @@ const host = '127.0.0.1';
 
 
 server.on("connection", (socket) => {
+    console.log("Client connected");
+
     socket.on("data", (data) => {
         const reqData = data.toString();
         
