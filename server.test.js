@@ -2,7 +2,7 @@ const net = require("net");
 const assert = require("node:assert");
 const {before, after, test} = require("node:test"); 
 
-let redisClient; // Redi s client instance
+let redisClient; // Redis client instance
 
 // Connect to the Redis server before running tests!
 const connectToRedis = () => {
@@ -42,15 +42,15 @@ const sendCommand = (command) => {
             reject(new Error("Redis client is not connected."));
             return;
         }
-
+        
         redisClient.write(command);
-
-        redisClient.once("data", (data) => {
-            resolve(data.toString());
-            redisClient.removeListener("error", onError);
+        
+        redisClient.once("data", (data) => { 
+            resolve(data.toString()); 
+            redisClient.removeListener("error", onError); 
         });
 
-        redisClient.once("error", onError);
+        redisClient.once("error", onError); 
     });
 };
 

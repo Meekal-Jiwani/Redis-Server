@@ -11,11 +11,18 @@ server.on("connection", (socket) => {
     console.log("Client Connected");
 
     socket.on("data", (data) => {
-        const reqData = data.toString();
-        logger.log(reqData);
+        let response;
         
-        socket.write("+OK\r\n");
-        // socket.write("res: " + reqData);
+        try {
+            const { command, args } = parseCommand(data);
+            response = executeCommand(command, args);
+        } 
+        catch (err) {
+            logger.error(err);
+            response = `-ERR unknown command '${command}'\r\n`;
+        }
+
+        socket.write(response);
     });
 
     socket.on("end", () => {
