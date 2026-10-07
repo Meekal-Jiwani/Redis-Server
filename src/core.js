@@ -1,8 +1,7 @@
 const logger = require("./utils/logger")("core");
-
-
-const store = {};
-const expirationTimes = {};
+const config = require("./config.json");
+const persistence = require("./persistence");
+const { store, expirationTimes } = persistence;
 
 const isExpired = (key) => 
     expirationTimes[key] && expirationTimes[key] < Date.now(); 
@@ -225,7 +224,7 @@ const commandHandlers = {
 
         return `$${value.length}\r\n${value}\r\n`;
     },
-    
+
     RPOP: (args) => {
         if (args.length < 1) {
         return "-ERR wrong number of arguments for 'rpop' command\r\n";
@@ -276,7 +275,16 @@ const parseCommand = (data) => {
 };
 
 const init = () => {
-    logger.info("Persistence mode: 'in-memory'");
+    if (config.snapshot) {
+        logger.info("Persistence mode: 'snapshot'");
+        persistence.loadSnapshotSync();
+
+        setInterval(async () => {
+            await persistence.saveSnapshot();
+        }, config.snapshotInterval);
+    } else {
+        logger.info("Persistence mode: 'in-memory'");
+    }
 };
 
 module.exports = { init, parseCommand, executeCommand };
