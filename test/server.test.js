@@ -1,7 +1,7 @@
 const net = require("net");
 const assert = require("node:assert");
 const {before, after, test} = require("node:test"); 
-const { buildRedisCommand } = require("./utils");
+const { buildRedisCommand } = require("../src/utils");
 
 let redisClient; // Redis client instance
 

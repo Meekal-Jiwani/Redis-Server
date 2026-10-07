@@ -1,4 +1,4 @@
-const logger = require("./logger")("core");
+const logger = require("./utils/logger")("core");
 
 
 const store = {};
