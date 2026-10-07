@@ -18,6 +18,10 @@ const checkExpiry = (key) => {
 };
 
 
+/* This object contains the command handlers for various Redis commands. 
+Each command handler is a function that takes an array of arguments and performs 
+the corresponding operation on the store. The command handlers return the appropriate 
+response based on the operation performed. */
 const commandHandlers = { 
     SET: (args) => { 
         if (args.length < 2) {
@@ -250,8 +254,12 @@ const commandHandlers = {
 };
 
 
-const executeCommand = (command, args) => {
-    logger.info(`Received ${command} ${args}`);
+/* This function is used to execute a command with its arguments. It checks if the 
+command exists in the commandHandlers object and executes it. If the command is not found, 
+it returns an error message. If the command is executed successfully, it returns the 
+result of the command execution. */
+const executeCommand = (command, args, replayingFromAOF = false) => {
+    logger.info(`Received ${command} ${args} ${replayingFromAOF || "AOF"}`);
 
     const handler = commandHandlers[command];
 
@@ -259,7 +267,22 @@ const executeCommand = (command, args) => {
         return "-ERR unknown command\r\n";
     }
 
-    return handler(args);
+    const result =  handler(args); // Execute the command and get the result
+
+    /* If append-only mode is enabled and the command is one of the 
+    AOF commands, append it to the AOF file */
+    if (
+        config.appendonly &&
+        !replayingFromAOF &&
+        config.aofCommands.includes(command)
+    ) {
+        persistence
+        .appendAof(command, args)
+        .then(() => {})
+        .catch(logger.error);
+    }
+
+    return result;
 };
 
 
@@ -282,6 +305,11 @@ const init = () => {
         setInterval(async () => {
             await persistence.saveSnapshot();
         }, config.snapshotInterval);
+
+    } else if (config.appendonly) {
+        logger.info("Persistence mode: 'appendonly'");
+        persistence.replayAofSync(executeCommand);
+
     } else {
         logger.info("Persistence mode: 'in-memory'");
     }

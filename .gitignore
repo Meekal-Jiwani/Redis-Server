@@ -50,4 +50,8 @@ out
 .DS_Store
 Thumbs.db
 
-
+# Redis persistence files (snapshots and append-only logs)
+*.rdb
+*.aof
+src/*.rdb
+src/*.aof
