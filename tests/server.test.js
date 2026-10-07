@@ -104,3 +104,27 @@ test("should handle unknown commands gracefully", async () => {
   const response = await sendCommand("UNKNOWN test");
   assert.strictEqual(response, "-ERR unknown command\r\n");
 });
+
+
+// Test case to check if the TTL command returns the correct TTL for a key and handles error cases
+test("should return correct TTL for a key and error cases", async () => {
+  await sendCommand("set fooT expT");
+  const expireResponse = await sendCommand("expire fooT 5");
+  assert.strictEqual(expireResponse, ":1\r\n");
+
+  await new Promise((resolve) => setTimeout(resolve, 2000));
+
+  const getResponse = await sendCommand("ttl fooT");
+  console.log(getResponse);
+  const match = getResponse.match(/^:(\d+)\r\n$/);
+  const ttlValue = parseInt(match[1]);
+
+  // As timeout wont be exact 2 seconds
+  assert.ok(ttlValue <= 3, "Expected ttlValue to be less than or equal to 3");
+
+  const errorResponse = await sendCommand("ttl");
+  assert.strictEqual(
+    errorResponse,
+    "-ERR wrong number of arguments for 'ttl' command\r\n"
+  );
+});

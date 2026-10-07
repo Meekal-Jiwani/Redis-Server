@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node --watch src/server.js",
-    "test": "node test/server.test.js"
+    "test": "node tests/server.test.js"
   },
   "keywords": [],
   "author": "Meekal Jiwani",

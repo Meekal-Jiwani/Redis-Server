@@ -79,6 +79,22 @@ const commandHandlers = {
         return ":1\r\n";
     },
 
+    TTL: (args) => {
+        if (args.length < 1) {
+        return "-ERR wrong number of arguments for 'ttl' command\r\n";
+        }
+
+        const [key] = args;
+
+        if (!store[key]) return ":-2\r\n";
+
+        if (!expirationTimes[key]) return ":-1\r\n";
+
+        const ttl = Math.floor((expirationTimes[key] - Date.now()) / 1000);
+
+        return ttl > 0 ? `:${ttl}\r\n` : ":-2\r\n";
+    },
+
     COMMAND: () => "+OK\r\n",
 };
 
