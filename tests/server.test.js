@@ -184,3 +184,36 @@ test("should DECR a key and error cases", async () => {
   const response3 = await sendCommand("decr fooNewKey2");
   assert.strictEqual(response3, ":-1\r\n");
 });
+
+
+// Test case to check if the server can handle LRANGE command and error cases
+test("should return error for LRANGE invalid key", async () => {
+  const errorResponse1 = await sendCommand("lrange list1");
+  assert.strictEqual(
+    errorResponse1,
+    "-ERR wrong number of arguments for 'lrange' command\r\n"
+  );
+
+  const errorResponse2 = await sendCommand("lrange list1 0 4");
+  assert.strictEqual(errorResponse2, "$-1\r\n");
+});
+
+
+// Test case to check if the server can handle LPUSH command and error cases
+test("should LPUSH for a key, error cases and LRANGE", async () => {
+  const lPushResponse = await sendCommand("lpush list1 el1");
+  assert.strictEqual(lPushResponse, ":1\r\n");
+
+  const lRangeResponse = await sendCommand("lrange list1 0 0");
+  assert.strictEqual(lRangeResponse, "*1\r\n$3\r\nel1\r\n");
+
+  const errorResponse1 = await sendCommand("lpush foo");
+  assert.strictEqual(
+    errorResponse1,
+    "-ERR wrong number of arguments for 'lpush' command\r\n"
+  );
+
+  await sendCommand("set foo bar");
+  const errorResponse2 = await sendCommand("lpush foo one");
+  assert.strictEqual(errorResponse2, "-ERR wrong type of key\r\n");
+});
