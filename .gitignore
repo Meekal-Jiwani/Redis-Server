@@ -1,0 +1,53 @@
+# Dependencies
+node_modules/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Diagnostic reports
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Test coverage
+coverage
+*.lcov
+.nyc_output
+
+# Environment variables / secrets
+.env
+.env.development.local
+.env.test.local
+.env.production.local
+.env.local
+
+# Caches
+.cache
+.temp
+.npm
+.eslintcache
+
+# Build output
+dist
+out
+
+# Package archives
+*.tgz
+
+# REPL history
+.node_repl_history
+
+# OS files
+.DS_Store
+Thumbs.db
+
+
