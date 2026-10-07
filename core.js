@@ -1,4 +1,24 @@
-// const logger = require("./logger")("core");
+const logger = require("./logger").default("core");
+
+
+const store = {};
+const expirationTimes = {};
+
+const isExpired = (key) => {
+    expirationTimes[key] && expirationTimes[key] < Date.now(); 
+};
+
+const checkExpiry = (key) => { 
+    if (isExpired(key)) {
+        delete store[key];
+        delete expirationTimes[key];
+        
+        return true;
+    }
+
+    return false;
+};
+
 
 const commandHandlers = { 
     SET: (args) => { 
@@ -63,26 +83,9 @@ const commandHandlers = {
     COMMAND: () => "OK\r\n",
 };
 
-const store = {};
-const expirationTimes = {};
-
-const isExpired = (key) => {
-    expirationTimes[key] && expirationTimes[key] < Date.now(); 
-};
-
-const checkExpiry = (key) => { 
-    if (isExpired(key)) {
-        delete store[key];
-        delete expirationTimes[key];
-        
-        return true;
-    }
-
-    return false;
-};
 
 const executeCommand = (command, args) => {
-    logger.log("Received ${command} with arguments: ${args}");
+    logger.info(`Received ${command} ${args}`);
 
     const handler = commandHandlers[command];
 
@@ -102,11 +105,11 @@ const parseCommand = (data) => {
     const command = lines[2].toUpperCase();
     const args = lines.slice(4).filter((_, index) => index % 2 === 0); 
 
-    // logger.log(command);
-    // logger.log(args);
-
     return { command, args };
 };
 
-export default { parseCommand, executeCommand };
+const init = () => {
+    logger.info("Persistence mode: 'in-memory'");
+};
 
+module.exports = { init, parseCommand, executeCommand };

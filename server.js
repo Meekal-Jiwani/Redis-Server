@@ -1,4 +1,5 @@
 const net = require("net");
+const { parseCommand, executeCommand, init } = require("./core");
 
 const logger = require("./logger").default("server");
 
@@ -8,7 +9,7 @@ const host = '127.0.0.1';
 
 
 server.on("connection", (socket) => {
-    console.log("Client Connected");
+    logger.info("Client Connected");
 
     socket.on("data", (data) => {
         let response;
@@ -19,17 +20,19 @@ server.on("connection", (socket) => {
         } 
         catch (err) {
             logger.error(err);
-            response = `-ERR unknown command '${command}'\r\n`;
+            response = "-ERR unknown command\r\n";
         }
 
         socket.write(response);
     });
 
     socket.on("end", () => {
-        console.log("Client Disconnected");
+        logger.info("Client Disconnected");
     });
 });
 
 server.listen(port, host, () => {
-    logger.log(`Server is running on ${host}:${port}`);
+    init();
+    
+    logger.info(`Server is running on ${host}:${port}`);
 });
