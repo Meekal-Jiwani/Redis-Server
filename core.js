@@ -1,12 +1,11 @@
-const logger = require("./logger").default("core");
+const logger = require("./logger")("core");
 
 
 const store = {};
 const expirationTimes = {};
 
-const isExpired = (key) => {
+const isExpired = (key) => 
     expirationTimes[key] && expirationTimes[key] < Date.now(); 
-};
 
 const checkExpiry = (key) => { 
     if (isExpired(key)) {
@@ -29,7 +28,7 @@ const commandHandlers = {
         const [key, value] = args;
         store[key] = { type: "string", value };
 
-        return "OK\r\n";
+        return "+OK\r\n";
     },
 
     GET: (args) => {
@@ -80,7 +79,7 @@ const commandHandlers = {
         return ":1\r\n";
     },
 
-    COMMAND: () => "OK\r\n",
+    COMMAND: () => "+OK\r\n",
 };
 
 

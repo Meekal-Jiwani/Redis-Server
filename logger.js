@@ -26,4 +26,4 @@ const logger = (namespace) => {
     };
 };
 
-export default logger;
+module.exports = logger;
