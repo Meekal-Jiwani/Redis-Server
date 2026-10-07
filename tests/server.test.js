@@ -128,3 +128,59 @@ test("should return correct TTL for a key and error cases", async () => {
     "-ERR wrong number of arguments for 'ttl' command\r\n"
   );
 });
+
+
+// Test case to check if the server can handle INCR command and error cases
+test("should INCR a key and error cases", async () => {
+  await sendCommand("set fooI 5");
+
+  const response1 = await sendCommand("incr fooI");
+  assert.strictEqual(response1, ":6\r\n");
+
+  const getResponse = await sendCommand("get fooI");
+  assert.strictEqual(getResponse, "$1\r\n6\r\n");
+
+  const response2 = await sendCommand("incr");
+  assert.strictEqual(
+    response2,
+    "-ERR wrong number of arguments for 'incr' command\r\n"
+  );
+
+  await sendCommand("set fooInvali tada1");
+  const errorResponse = await sendCommand("incr fooInvali");
+  assert.strictEqual(
+    errorResponse,
+    "-ERR value is not an integer or out of range\r\n"
+  );
+
+  const response3 = await sendCommand("incr fooNewKey1");
+  assert.strictEqual(response3, ":1\r\n");
+});
+
+
+// Test case to check if the server can handle DECR command and error cases
+test("should DECR a key and error cases", async () => {
+  await sendCommand("set fooD 11");
+
+  const response1 = await sendCommand("decr fooD");
+  assert.strictEqual(response1, ":10\r\n");
+
+  const getResponse = await sendCommand("get fooD");
+  assert.strictEqual(getResponse, "$2\r\n10\r\n");
+
+  const response2 = await sendCommand("decr");
+  assert.strictEqual(
+    response2,
+    "-ERR wrong number of arguments for 'decr' command\r\n"
+  );
+
+  await sendCommand("set fooInvali tada2");
+  const errorResponse = await sendCommand("decr fooInvali");
+  assert.strictEqual(
+    errorResponse,
+    "-ERR value is not an integer or out of range\r\n"
+  );
+
+  const response3 = await sendCommand("decr fooNewKey2");
+  assert.strictEqual(response3, ":-1\r\n");
+});
