@@ -294,6 +294,26 @@ const commandHandlers = {
         return "+OK\r\n";
     },
 
+    PEXPIREAT: (args) => {
+        if (args.length < 2) {
+            return "-ERR wrong number of arguments for 'pexpireat' command\r\n";
+        }
+
+        const [key, timestamp] = args;
+        const deadline = Number(timestamp);
+
+        if (!Number.isInteger(deadline)) {
+            return "-ERR value is not an integer or out of range\r\n";
+        }
+
+        if (checkExpiry(key) || !store[key]) {
+            return ":0\r\n";
+        }
+
+        expirationTimes[key] = deadline;
+        return ":1\r\n";
+    },
+
     COMMAND: () => "+OK\r\n",
 };
 
@@ -322,8 +342,18 @@ const executeCommand = (command, args, replayingFromAOF = false) => {
         config.aofCommands.includes(command) &&
         !result.startsWith("-") // Only append successful commands (not errors) 
     ) {
+        let logCommand = command;
+        let logArgs = args;
+
+        // Log EXPIRE as an absolute deadline so a restart doesn't restart the timer
+        if (command === "EXPIRE") {
+            if (result !== ":1\r\n") return result;   // key was missing, nothing to log
+            logCommand = "PEXPIREAT";
+            logArgs = [args[0], String(expirationTimes[args[0]])];
+        }
+
         persistence
-        .appendAof(command, args)
+        .appendAof(logCommand, logArgs)
         .then(() => {})
         .catch(logger.error);
     }
