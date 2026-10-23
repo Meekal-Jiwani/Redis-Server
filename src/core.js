@@ -30,6 +30,7 @@ const commandHandlers = {
 
         const [key, value] = args;
         store[key] = { type: "string", value };
+        delete expirationTimes[key]; // Remove any existing expiration time for the key
 
         return "+OK\r\n";
     },
@@ -259,7 +260,8 @@ command exists in the commandHandlers object and executes it. If the command is 
 it returns an error message. If the command is executed successfully, it returns the 
 result of the command execution. */
 const executeCommand = (command, args, replayingFromAOF = false) => {
-    logger.info(`Received ${command} ${args} ${replayingFromAOF || "AOF"}`);
+    // Log the command and its arguments, along with whether it's being replayed from AOF
+    logger.info(`Received ${command} ${args.join(" ")}${replayingFromAOF ? " (AOF replay)" : ""}`);
 
     const handler = commandHandlers[command];
 

@@ -57,7 +57,7 @@ OK
 
 I wanted to understand what actually happens *underneath* tools I use every day. Redis is a great target: small enough to build solo, but it touches real systems-engineering problems.
 
-- **Networking:** handling raw TCP connections and a binary-safe, text-framed protocol.
+- **Networking:** handling raw TCP connections and a text-framed protocol.
 - **Data structures and memory:** modelling typed values (strings, lists) in an in-memory store.
 - **Time-based logic:** implementing key expiry (TTL) correctly.
 - **Durability:** making in-memory data survive restarts, and understanding the trade-offs between persistence strategies.

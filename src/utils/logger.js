@@ -7,13 +7,8 @@ const logger = (namespace) => {
         // Log message format with timestamp, namespace, and message!
         const logMessage = `${new Date().toISOString()} ${node} [${namespace}]: ${message}`; 
 
-        if (node === "error") {
-            console.error(logMessage);
-        }
-            
-        if (debugNamespaces.includes("*") || debugNamespaces.includes(namespace)) { //
+        if (node === "error" || debugNamespaces.includes("*") || debugNamespaces.includes(namespace)) {
             console[node](logMessage);
-            return;
         }
     };
 
