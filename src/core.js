@@ -164,13 +164,36 @@ const commandHandlers = {
 
         const [key, start, stop] = args;
 
-        if (checkExpiry(key) || !store[key] || store[key].type !== "list") {
-            return "$-1\r\n";
+        if (checkExpiry(key) || !store[key]) {
+            return "$*0\r\n";
         }
 
+        if (store[key].type !== "list") {
+            return "-ERR wrong type of key\r\n";
+        }
+
+        // Get the list associated with the key
         const list = store[key].value;
         const startIndex = parseInt(start, 10);
         const stopIndex = parseInt(stop, 10);
+
+        // Handle negative indices
+        if (isNaN(startIndex) || isNaN(stopIndex)) {
+            return "-ERR value is not an integer or out of range\r\n";
+        }
+
+        // Adjust negative indices to positive indices
+        if (startIndex < 0) {
+            startIndex = Math.max(list.length + startIndex, 0);
+        }
+        if (stopIndex < 0) {
+            stopIndex = list.length + stopIndex;
+        }
+        if (stopIndex < 0) {
+            return "$*0\r\n"; 
+        }
+
+        // Ensure the stop index does not exceed the list length
         const range = list.slice(startIndex, stopIndex + 1);
 
         let response = `*${range.length}\r\n`;
