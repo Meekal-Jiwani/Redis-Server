@@ -56,16 +56,17 @@ const commandHandlers = {
             return "-ERR wrong number of arguments for 'del' command\r\n";
         }
 
-        const [key] = args;
+        let deleted = 0;
 
-        if (!checkExpiry(key) && store[key]) {
-            delete store[key];
-            delete expirationTimes[key];
-
-            return ":1\r\n";
-        } else {
-            return ":0\r\n";
+        for (const key of args) {
+            if (!checkExpiry(key) && store[key]) {
+                delete store[key];
+                delete expirationTimes[key];
+                deleted++;
+            }
         }
+
+        return `:${deleted}\r\n`;
     },
 
     EXPIRE: (args) => {
