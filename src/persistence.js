@@ -54,6 +54,15 @@ class Persistence {
     }
   }
 
+  // Clear all data in memory and delete the persistence files
+  flushAll() {
+    for (const key of Object.keys(this.store)) delete this.store[key];
+    for (const key of Object.keys(this.expirationTimes)) delete this.expirationTimes[key];
+
+    fs.rmSync(this.AOF_FILE, { force: true });
+    fs.rmSync(this.DATA_FILE, { force: true });
+  }
+
   // Append commands to the AOF file asynchronously
   async appendAof(command, args) {
     let aofLog = `${command} ${args.join(" ")}\r\n`;

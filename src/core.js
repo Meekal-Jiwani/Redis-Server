@@ -288,6 +288,11 @@ const commandHandlers = {
         return `$${Buffer.byteLength(value)}\r\n${value}\r\n`;
     },
 
+    FLUSHALL: () => {
+        persistence.flushAll();
+        return "+OK\r\n";
+    },
+
     COMMAND: () => "+OK\r\n",
 };
 

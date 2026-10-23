@@ -21,6 +21,8 @@ const connectToRedis = () => {
 
 before(async () => {
     await connectToRedis();
+     console.log("WARNING: tests run FLUSHALL and erase ALL server data.");
+    await sendCommand("flushall");
 });
 
 // Disconnect from the Redis server after running tests!
