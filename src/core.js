@@ -58,7 +58,7 @@ const commandHandlers = {
 
         const [key] = args;
 
-        if (store[key]) {
+        if (!checkExpiry(key) && store[key]) {
             delete store[key];
             delete expirationTimes[key];
 
@@ -74,8 +74,14 @@ const commandHandlers = {
         }
 
         const [key, seconds] = args;
+        const secs = Number(seconds); 
 
-        if (!store[key]) {
+        // Check if the seconds argument is a valid integer
+        if (!Number.isInteger(secs)) {
+            return "-ERR value is not an integer or out of range\r\n";
+        }
+        
+        if (checkExpiry(key) || !store[key]) {
             return ":0\r\n";
         }
 
@@ -105,6 +111,7 @@ const commandHandlers = {
         }
 
         const [key] = args;
+        checkExpiry(key);
 
         if (!store[key]) {
         store[key] = { type: "string", value: "1" };
@@ -126,7 +133,8 @@ const commandHandlers = {
         }
 
         const [key] = args;
-
+        checkExpiry(key);
+        
         if (!store[key]) {
         store[key] = { type: "string", value: "-1" };
 
