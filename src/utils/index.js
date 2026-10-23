@@ -40,6 +40,9 @@ const parseResp = (buf) => {
             // Read each part of the command based on the count
             for (let i = 0; i < count; i++) {
                 const len = parseInt(readLine().slice(1), 10);
+
+                if (pos + len + 2 > buf.length) throw new Error("incomplete data");
+                
                 parts.push(buf.toString("utf8", pos, pos + len));
                 pos += len + 2;
             }

@@ -197,7 +197,7 @@ test("should return error for LRANGE invalid key", async () => {
   );
 
   const errorResponse2 = await sendCommand("lrange list1 0 4");
-  assert.strictEqual(errorResponse2, "$*0\r\n");
+  assert.strictEqual(errorResponse2, "*0\r\n");
 });
 
 

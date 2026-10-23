@@ -167,7 +167,7 @@ const commandHandlers = {
         const [key, start, stop] = args;
 
         if (checkExpiry(key) || !store[key]) {
-            return "$*0\r\n";
+            return "*0\r\n";
         }
 
         if (store[key].type !== "list") {
@@ -192,7 +192,7 @@ const commandHandlers = {
             stopIndex = list.length + stopIndex;
         }
         if (stopIndex < 0) {
-            return "$*0\r\n"; 
+            return "*0\r\n"; 
         }
 
         // Ensure the stop index does not exceed the list length
