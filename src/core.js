@@ -48,7 +48,7 @@ const commandHandlers = {
 
         const value = store[key].value;
 
-        return `$${value.length}\r\n${value}\r\n`;
+        return `$${Buffer.byteLength(value)}\r\n${value}\r\n`;
     },
 
     DEL: (args) => {
@@ -200,7 +200,7 @@ const commandHandlers = {
         let response = `*${range.length}\r\n`;
 
         range.forEach((value) => {
-            response += `$${value.length}\r\n${value}\r\n`;
+            response += `$${Buffer.byteLength(value)}\r\n${value}\r\n`;
         });
 
         return response;
@@ -264,7 +264,7 @@ const commandHandlers = {
 
         const value = store[key].value.shift();
 
-        return `$${value.length}\r\n${value}\r\n`;
+        return `$${Buffer.byteLength(value)}\r\n${value}\r\n`;
     },
 
     RPOP: (args) => {
@@ -285,7 +285,7 @@ const commandHandlers = {
 
         const value = store[key].value.pop();
 
-        return `$${value.length}\r\n${value}\r\n`;
+        return `$${Buffer.byteLength(value)}\r\n${value}\r\n`;
     },
 
     COMMAND: () => "+OK\r\n",

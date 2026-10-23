@@ -3,7 +3,7 @@ const buildRedisCommand = (input) => {
     let command = `*${args.length}\r\n`;
 
     args.forEach((arg) => {
-        command += `$${arg.length}\r\n${arg}\r\n`;
+        command += `$${Buffer.byteLength(arg)}\r\n${arg}\r\n`;
     });
 
     return command;
