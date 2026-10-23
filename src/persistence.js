@@ -1,3 +1,4 @@
+const { encodeCommand, parseResp } = require("./utils");
 const fs = require("fs");
 const fsp = fs.promises;
 const path = require("path");
@@ -65,11 +66,11 @@ class Persistence {
 
   // Append commands to the AOF file asynchronously
   async appendAof(command, args) {
-    let aofLog = `${command} ${args.join(" ")}\r\n`;
+    const aofLog = encodeCommand([command, ...args]);
 
     try {
       await fsp.appendFile(this.AOF_FILE, aofLog);
-      logger.info(`Appended to AOF file: ${aofLog.trim()}`);
+      logger.info(`Appended to AOF: ${command} ${args.join(" ")}`);
     } catch (error) {
       logger.error(`Failed to append to AOF file: ${error.message}`);
     }
@@ -83,20 +84,13 @@ class Persistence {
 
     // Read the AOF file and execute each command to restore the state
     try {
-      const data = fs.readFileSync(this.AOF_FILE).toString();
-
-      if (!data) {
-        return;
-      }
-
-      const logs = data.split("\r\n").filter(Boolean);
+      const data = fs.readFileSync(this.AOF_FILE);   // Buffer, not string
+      if (data.length === 0) return;
 
       logger.info("Replay AOF started");
 
-      // Execute each command in the AOF log to restore the state
-      for (const logEntry of logs) {
-        const [command, ...args] = logEntry.split(" ");
-        executeCommand(command, args, true);
+      for (const [command, ...args] of parseResp(data)) {
+          executeCommand(command, args, true);
       }
 
       logger.info("Replay AOF successfully completed");

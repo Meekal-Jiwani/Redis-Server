@@ -1,3 +1,4 @@
+const { parseResp } = require("./utils");
 const logger = require("./utils/logger")("core");
 const config = require("./config.json");
 const persistence = require("./persistence");
@@ -318,7 +319,8 @@ const executeCommand = (command, args, replayingFromAOF = false) => {
     if (
         config.appendonly &&
         !replayingFromAOF &&
-        config.aofCommands.includes(command)
+        config.aofCommands.includes(command) &&
+        !result.startsWith("-") // Only append successful commands (not errors) 
     ) {
         persistence
         .appendAof(command, args)
@@ -330,15 +332,15 @@ const executeCommand = (command, args, replayingFromAOF = false) => {
 };
 
 
-/* This function is used to parse the command and 
-arguments from the data received from the client. */
+/* This function is used to parse a command from the received data. 
+It uses the parseResp function to parse the RESP data and extract 
+the command name and its arguments. The command name is converted 
+to uppercase for consistency, and an object containing the command
+and its arguments is returned. */
 const parseCommand = (data) => {
-    const lines = data.toString().split("\r\n").filter((line) => !!line); 
-    
-    const command = lines[2].toUpperCase();
-    const args = lines.slice(4).filter((_, index) => index % 2 === 0); 
-
-    return { command, args };
+    const [parts] = parseResp(data);
+    const [name, ...args] = parts;   // Extract the command name and its arguments from the parsed parts
+    return { command: name.toUpperCase(), args };
 };
 
 const init = () => {
