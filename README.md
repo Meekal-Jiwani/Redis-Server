@@ -9,7 +9,7 @@
 
 ```text
 $ redis-cli -p 6379
-127.0.0.1:6379> SET user:1 "meekal"
+127.0.0.1:6379> SET user:1 "jon"
 OK
 127.0.0.1:6379> EXPIRE user:1 60
 (integer) 1
