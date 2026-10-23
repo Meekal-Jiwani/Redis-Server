@@ -1,16 +1,13 @@
 {
   "name": "redis-server-project",
   "version": "1.0.0",
-  "description": "",
-  "main": "server.js",
+  "description": "A Redis-compatible in-memory data store built from scratch in Node.js",
+  "main": "src/server.js",
   "scripts": {
     "start": "node --watch src/server.js",
     "test": "node tests/server.test.js"
   },
   "keywords": [],
   "author": "Meekal Jiwani",
-  "license": "MIT",
-  "devDependencies": {
-    "cross-env": "^10.1.0"
-  }
+  "license": "MIT"
 }

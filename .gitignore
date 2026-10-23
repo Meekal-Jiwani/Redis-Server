@@ -55,3 +55,6 @@ Thumbs.db
 *.aof
 src/*.rdb
 src/*.aof
+
+# IDEs and editors
+.vscode/
