@@ -174,8 +174,8 @@ const commandHandlers = {
 
         // Get the list associated with the key
         const list = store[key].value;
-        const startIndex = parseInt(start, 10);
-        const stopIndex = parseInt(stop, 10);
+        let startIndex = parseInt(start, 10);
+        let stopIndex = parseInt(stop, 10);
 
         // Handle negative indices
         if (isNaN(startIndex) || isNaN(stopIndex)) {
