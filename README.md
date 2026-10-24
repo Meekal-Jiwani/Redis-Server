@@ -136,4 +136,4 @@ This is a learning project, not a production database. Each TCP packet is treate
 
 MIT. See [`LICENSE`](LICENSE).
 
-**Meekal Jiwani** · Computer Science student at Simon Fraser University · [@Meekal-Jiwani](https://github.com/Meekal-Jiwani)
+**Meekal Jiwani** · Computing Science student at Simon Fraser University · [@Meekal-Jiwani](https://github.com/Meekal-Jiwani)
