@@ -222,7 +222,7 @@ const commandHandlers = {
             return "-ERR wrong type of key\r\n";
         }
 
-        store[key].value.unshift(...values);
+        for (const v of values) store[key].value.unshift(v);
 
         return `:${store[key].value.length}\r\n`;
     },

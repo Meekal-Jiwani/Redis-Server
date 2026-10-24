@@ -27,7 +27,7 @@ I wanted to understand what happens *underneath* tools I use every day. Redis is
 
 ## Features
 
-- **Real RESP protocol** over TCP, so any RESP client can talk to it
+- **Real RESP protocol** over TCP, so `redis-cli` and other simple RESP clients can talk to it
 - **Strings:** `SET`, `GET`, `DEL`, `INCR`, `DECR`
 - **Lists:** `LPUSH`, `RPUSH`, `LPOP`, `RPOP`, `LRANGE` (negative indices supported)
 - **Expiry:** `EXPIRE` and `TTL`, with lazy expiration (expired keys are removed when accessed)
@@ -37,7 +37,7 @@ I wanted to understand what happens *underneath* tools I use every day. Redis is
 
 ## Quick Start
 
-Requires [Node.js](https://nodejs.org) 18 or newer.
+Requires [Node.js](https://nodejs.org) 18.11 or newer.
 
 ```bash
 git clone https://github.com/Meekal-Jiwani/Redis-Server.git
@@ -48,9 +48,11 @@ npm start
 The server listens on `127.0.0.1:6379` (the default Redis port, so stop any real Redis first). Try it with `redis-cli -p 6379`, or by hand with raw RESP:
 
 ```bash
-printf '*3\r\n$3\r\nSET\r\n$3\r\nfoo\r\n$3\r\nbar\r\n' | nc 127.0.0.1 6379   # +OK
-printf '*2\r\n$3\r\nGET\r\n$3\r\nfoo\r\n' | nc 127.0.0.1 6379                 # $3 bar
+printf '*3\r\n$3\r\nSET\r\n$3\r\nfoo\r\n$3\r\nbar\r\n' | nc -q1 127.0.0.1 6379   # +OK
+printf '*2\r\n$3\r\nGET\r\n$3\r\nfoo\r\n' | nc -q1 127.0.0.1 6379                 # $3 bar
 ```
+
+> `-q1` makes `nc` exit after sending, otherwise it can hang waiting for the connection to close. If your `nc` doesn't support `-q` (e.g. macOS), drop it or try `-w1`.
 
 ## Supported Commands
 
@@ -71,7 +73,7 @@ Bad calls return Redis-style errors, such as `-ERR wrong number of arguments for
 
 ## Configuration
 
-Everything lives in [`src/config.json`](src/config.json):
+Persistence settings live in [`src/config.json`](src/config.json). The host and port (`127.0.0.1:6379`) are set in [`src/server.js`](src/server.js).
 
 | Option | Default | Description |
 | --- | --- | --- |
@@ -80,7 +82,7 @@ Everything lives in [`src/config.json`](src/config.json):
 | `snapshotInterval` | `5000` | Snapshot frequency in milliseconds |
 | `aofCommands` | all writes | Which commands get logged to the AOF |
 
-Use one persistence mode at a time. With both off, the server is purely in-memory. Set `DEBUG=server,core,persistence` to filter log output.
+Use one persistence mode at a time. To use snapshots, set `snapshot: true` **and** `appendonly: false`; otherwise the AOF is still written but never replayed. With both off, the server is purely in-memory. Set `DEBUG=server,core,persistence` to filter log output.
 
 ## How It Works
 
@@ -126,7 +128,7 @@ npm test    # terminal 2
 
 ## Known Limitations
 
-This is a learning project, not a production database. Pipelined commands, commands split across TCP packets, and very large values are not handled, the AOF is never compacted, and expiry is lazy only.
+This is a learning project, not a production database. Each TCP packet is treated as exactly one command: pipelined commands are not supported (only the first in a packet runs; the rest are silently dropped), and a command split across packets returns an error. Very large values are not handled, the AOF is never compacted, and expiry is lazy only.
 
 **Next up:** `PING`, `EXISTS`, `KEYS`, hashes and sets, Pub/Sub, `AUTH`, a background expiry sweeper, and CI.
 

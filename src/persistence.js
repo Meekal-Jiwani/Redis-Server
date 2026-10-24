@@ -12,8 +12,8 @@ class Persistence {
   AOF_FILE = path.join(__dirname, "data.aof");
 
   constructor() {
-    this.store = {};
-    this.expirationTimes = {};
+    this.store = Object.create(null);
+    this.expirationTimes = Object.create(null);
   }
 
   // Save the snapshot to the data file asynchronously
